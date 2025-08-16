@@ -18,5 +18,5 @@ export const logoutController = async (req, res) => {
 };
 
 export const getProfile = async (req, res) => {
-    // Your profile retrieval logic here
+    // Your profile retrieval logic 
 };

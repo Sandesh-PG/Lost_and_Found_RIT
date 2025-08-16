@@ -1,8 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
 import authRoutes from './src/routes/auth.routes.js';
-// import lostRoutes from './src/routes/Lost.routes.js';
-// import foundRoutes from './src/routes/Found.routes.js';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import connectToDb from "./src/db/db.js"
