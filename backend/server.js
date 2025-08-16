@@ -1,10 +1,11 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const connectToDb = require("./src/db/db");
 require("dotenv").config();
 
 const app = express();
-
+connectToDb();
 app.use(cors());
 app.use(express.json());
 
@@ -12,9 +13,6 @@ app.get("/", (req, res) => {
   res.send("Lost & Found API running...");
 });
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("✅ MongoDB Connected");
-    app.listen(5000, () => console.log("🚀 Server running on port 5000"));
-  })
-  .catch(err => console.error(err));
+app.listen(3000, ()=>{
+  console.log('Server running at 3000');
+})
