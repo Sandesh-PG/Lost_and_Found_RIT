@@ -1,22 +1,22 @@
-const express = require('express');
-
+import express from 'express';
+import { LostItemController, ReportLostItemController, FindLostItemController, UpdateLostItemController, ListOfLostItemUserController } from '../controllers/Lost.controllers.js';
+import { authMiddleware } from '../middleware/auth.middleware.js';
 
 const router = express.Router();
 
 
-// GET /: To retrieve a list of all found items.
-router.get('/', FoundItemController);
+router.get('/', LostItemController);
 
-// POST /: To report a new found item. (Protected)
-router.post('/', AuthMiddleware, FoundNewItemController);
 
-// GET /:itemId: To get details of a specific found item.
-router.get('/:itemId', DetailsItemController);
+router.post('/', authMiddleware, ReportLostItemController);
 
-// PUT /:itemId: To update a found item's details. (Protected)
-router.put('/:itemId', AuthMiddleware, UpdateFoundItemController);
 
-// GET /user/:userId: To get a list of found items reported by a specific user.
-router.get('/user/:userId', AuthMiddleware, ListOfItemsFoundByUserController);
+router.get('/:item_id', authMiddleware, FindLostItemController);
 
-module.exports = router;
+
+router.put('/:item_id', authMiddleware, UpdateLostItemController);
+
+
+router.get('/user/:user_id', ListOfLostItemUserController);
+
+export default router;

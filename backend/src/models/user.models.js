@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const UserSchema = new mongoose.Schema({
     username: {
@@ -29,12 +29,12 @@ const UserSchema = new mongoose.Schema({
     profilePictureURL: {
         type: String
     },
-    createdAt : {
-        type : Date,
-        default : Date.now()
+    createdAt: {
+        type: Date,
+        default: Date.now()
     }
 });
 
 const UserModel = mongoose.model("user", UserSchema);
 
-module.exports = UserModel;
+export default UserModel;
