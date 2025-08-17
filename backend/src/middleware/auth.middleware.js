@@ -1,33 +1,27 @@
 import jwt from 'jsonwebtoken';
-import userModel from '../models/user.models.js';
-
-//par bar bar token check karna bahut hecktike hai isliye hame middleware folder banathe hai
+import UserModel from '../models/user.models.js';
 
 async function authMiddleware(req, res, next) {
-    const token = req.cookies.token;
+  const token = req.cookies.token;
+  if (!token) {
+    return res.status(401).json({
+      msg: 'Unauthorized access, please login!',
+    });
+  }
 
-    if (!token) {
-        return res.status(401).json({
-            msg: "Unauthorized access, pls login!!"
-        });
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await UserModel.findById(decoded.userId);
+    if (!user) {
+      return res.status(401).json({ msg: 'User not found' });
     }
-
-    //we will first verify kya token hamne create kiya hai 
-    //aur koi dusra server create kiya hai
-
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        const user = await userModel.findOne({
-            _id: decoded.id
-        });
-
-        req.user = user;
-        next();
-    } catch (err) {
-        return res.status(401).json({
-            msg: "token not from our server"
-        });
-    }
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return res.status(401).json({
+      msg: 'Invalid or expired token',
+    });
+  }
 }
 
 export { authMiddleware };
