@@ -11,6 +11,7 @@ router.post('/register', registerController);
 //user login
 router.post('/login', loginController);
 
+
 // /api/auth/logout
 //user logout
 router.post('/logout', logoutController);

@@ -1,20 +1,7 @@
-import {Routes, Route } from 'react-router-dom';
-import Home from './pages/Home.jsx';
-import SignIn from './pages/SignIn.jsx';
-import SignUp from './pages/SignUp.jsx';
-import Navbar from './layout/Navbar.jsx';
+import "./App.css";
 
 function App() {
-  return (
-      <>
-      <Navbar />
-      <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/signin' element={<SignIn />} />
-        <Route path='/signup' element={<SignUp />} />
-      </Routes>
-      </>
-  );
+  return <h1 className="text-3xl">Hello</h1>;
 }
 
 export default App;
