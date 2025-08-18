@@ -1,6 +1,6 @@
-const express = require('express');
-const LostItemModel = require('../models/LostItem.models');
-const authMiddleware = require('../middleware/auth.middleware');
+import express from 'express';
+import LostItemModel from '../models/LostItem.models.js';
+import { authMiddleware } from '../middleware/auth.middleware.js';
 
 const router = express.Router();
 
@@ -28,4 +28,4 @@ router.put('/:item_id', authMiddleware, UpdateLostItemController);
 //Get all lost items for a specific user
 router.get('/user/:user_id', ListOfLostItemUserController);
 
-module.exports = router
+export default router;

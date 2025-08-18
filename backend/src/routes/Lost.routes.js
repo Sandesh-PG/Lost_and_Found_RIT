@@ -1,5 +1,4 @@
-const express = require('express');
-
+import express from "express"
 
 const router = express.Router();
 
@@ -19,4 +18,4 @@ router.put('/:itemId', AuthMiddleware, UpdateFoundItemController);
 // GET /user/:userId: To get a list of found items reported by a specific user.
 router.get('/user/:userId', AuthMiddleware, ListOfItemsFoundByUserController);
 
-module.exports = router;
+export default router;

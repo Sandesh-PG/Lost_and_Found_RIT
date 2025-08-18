@@ -1,35 +1,46 @@
-const jwt = require('jsonwebtoken')
-const userModel = require('../models/user.models')
+import jwt from 'jsonwebtoken';
+import UserModel from '../models/user.models.js';
 
-//par bar bar token check karna bahut hecktike hai isliye hame middleware folder banathe hai
+const protectRoute = async (req, res, next) => {
+  try {
+    let token;
 
-async function authMiddleware(req, res, next) {
-    const token = req.cookies.token;
-
-    if(!token) {
-        return res.status(401).json({
-            msg:"Unauthorized access, pls login!!"
-        })
+    // 1. Look for the token in the standard 'Authorization' header
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      token = req.headers.authorization.split(' ')[1];
     }
 
-    //we will first verify kya token hamne create kiya hai 
-    //aur koi dusra server create kiya hai
-
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY)
-        const user = await userModel.findOne({
-            _id:decoded.id
-        })
-
-        req.user = user;
-        next();
-    }
-    catch(err) {
-        return res.status(401).json({
-            msg:"token not from our server"
-        })
+    if (!token) {
+      return res.status(401).json({ message: 'Unauthorized - No Token Provided' });
     }
 
-}
+    // 2. Verify the token is valid
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decoded) {
+      return res.status(401).json({ message: 'Unauthorized - Invalid Token' });
+    }
 
-module.exports = authMiddleware;
+    // 3. Find the user from the token's payload
+    const user = await UserModel.findById(decoded.userId).select('-password');
+    if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+    }
+
+    // 4. Attach the user to the request object for the next function to use
+    req.user = user;
+
+    next(); // Proceed to the getProfile controller
+  } catch (error) {
+    console.error('Error in protectRoute middleware:', error.message);
+    // Handle specific JWT errors
+    if (error.name === 'JsonWebTokenError') {
+        return res.status(401).json({ message: 'Unauthorized - Invalid Token' });
+    }
+    if (error.name === 'TokenExpiredError') {
+        return res.status(401).json({ message: 'Unauthorized - Token Expired' });
+    }
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+export default protectRoute;
