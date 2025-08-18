@@ -1,18 +1,26 @@
 import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { AuthContext } from "../AuthContext.jsx";
+import { AuthContext } from "../AuthContext"; // Correct the path if necessary
 
 const Navbar = () => {
-  const { isLogin, setIsLogin } = useContext(AuthContext);
+  // Use the token and logout function from the context
+  const { token, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    await fetch("http://localhost:5000/api/auth/logout", {
-      method: "POST",
-      credentials: "include",
-    });
-    setIsLogin(false);
-    navigate("/login");
+    try {
+      // Call the backend to invalidate the session/cookie
+      await fetch("http://localhost:5000/api/auth/logout", {
+        method: "POST",
+        credentials: "include", // Important for sending the httpOnly cookie
+      });
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      // Always update the frontend state and redirect
+      logout();
+      navigate("/login");
+    }
   };
 
   return (
@@ -26,7 +34,8 @@ const Navbar = () => {
         </Link>
       </div>
       <div className="flex gap-4">
-        {isLogin ? (
+        {/* Check for the token to determine if the user is logged in */}
+        {token ? (
           <>
             <Link to="/profile">
               <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">

@@ -1,16 +1,12 @@
-import React, { useContext } from "react";
-import { AuthContext } from "../AuthContext.jsx";
-import { Navigate } from "react-router-dom";
+import React, { useContext } from 'react';
+import { Navigate, Outlet } from 'react-router-dom';
+import { AuthContext } from '../AuthContext';
 
-const PrivateRoute = ({ children }) => {
-  const { isLogin, loading } = useContext(AuthContext);
+export default function PrivateRoute() {
+  // Get the token from the global authentication context.
+  const { token } = useContext(AuthContext);
 
-  // Wait until auth checking is complete
-  if (loading) {
-    return null; // Or show a spinner
-  }
-
-  return isLogin ? children : <Navigate to="/login" />;
-};
-
-export default PrivateRoute;
+  // If a token exists, the user is authenticated, so render the requested page (Outlet).
+  // If not, redirect the user to the login page.
+  return token ? <Outlet /> : <Navigate to="/login" />;
+}

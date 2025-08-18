@@ -1,125 +1,127 @@
-import React, { useState, useContext } from "react";
-import { AuthContext } from "../AuthContext.jsx"; // Import AuthContext
-import { Link, useNavigate } from "react-router-dom";
-import { FcGoogle } from "react-icons/fc";
+import React, { useState, useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../AuthContext';
 
-const Login = () => {
-  const { setIsLogin } = useContext(AuthContext); // Use context setter
-  const [formData, setFormData] = useState({ email: "", password: "" });
+export default function Login() {
+  const [formData, setFormData] = useState({ username: '', password: '' });
+  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  
+  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value,
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(formData),
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // Send the username input as the 'loginIdentifier'
+        body: JSON.stringify({
+            loginIdentifier: formData.username,
+            password: formData.password
+        }),
       });
-      const data = await response.json();
-      if (response.ok) {
-        setIsLogin(true); // Set logged-in state on success
-        navigate("/");
-      } else {
-        alert(data.message || "Login failed!");
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Login failed');
       }
-    } catch (error) {
-      alert("Server error! Please try again.");
+      
+      login(data.user, data.token);
+      setLoading(false);
+      navigate('/');
+    } catch (err) {
+      setLoading(false);
+      setError(err.message);
     }
-    setLoading(false);
   };
-
-  const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:5000/api/auth/google";
-  };
-
-  // ...rest of your component remains unchanged
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8 space-y-6">
+        <h2 className="text-3xl font-bold text-center text-gray-800">
           Welcome Back
         </h2>
-        <button
-          onClick={handleGoogleLogin}
-          className="w-full flex items-center justify-center gap-3 border border-gray-300 py-3 rounded-lg hover:bg-gray-100 transition"
-          disabled={loading}
+        
+        {/* Google Sign-In Button */}
+        <a 
+          href="http://localhost:5000/api/auth/google" 
+          className="w-full flex items-center justify-center gap-2 py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-100 transition"
         >
-          <FcGoogle size={22} />
-          <span className="font-medium text-gray-700">Sign in with Google</span>
-        </button>
-        <div className="flex items-center my-6">
-          <hr className="flex-1 border-gray-300" />
-          <span className="px-3 text-gray-500 text-sm">or</span>
-          <hr className="flex-1 border-gray-300" />
+          <img className="w-6 h-6" src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google icon" />
+          <span className="text-gray-700 font-semibold">Sign in with Google</span>
+        </a>
+
+        {/* Divider */}
+        <div className="flex items-center">
+          <div className="flex-grow bg-gray-200 h-px"></div>
+          <span className="px-4 text-gray-500 text-sm">or</span>
+          <div className="flex-grow bg-gray-200 h-px"></div>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-5">
+
+        {/* Manual Login Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+              Username
             </label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-              placeholder="Enter your email"
-              disabled={loading}
+            <input 
+              type='text' 
+              placeholder='Enter your username' 
+              className='w-full border border-gray-300 p-3 rounded-lg focus:ring-blue-500 focus:border-blue-500' 
+              id='username' 
+              onChange={handleChange} 
+              required 
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
               Password
             </label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-              placeholder="Enter your password"
-              disabled={loading}
+            <input 
+              type='password' 
+              placeholder='Enter your password' 
+              className='w-full border border-gray-300 p-3 rounded-lg focus:ring-blue-500 focus:border-blue-500' 
+              id='password' 
+              onChange={handleChange} 
+              required 
             />
-            <div className="text-right mt-1">
-              <Link
-                to="/forgot-password"
-                className="text-sm text-blue-600 hover:underline"
-              >
-                Forgot Password?
-              </Link>
-            </div>
           </div>
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold text-lg hover:bg-blue-700 transition"
-            disabled={loading}
+
+          <div className="text-right text-sm">
+            <Link to="/forgot-password" className="font-medium text-blue-600 hover:text-blue-500">
+              Forgot Password?
+            </Link>
+          </div>
+          
+          <button 
+            disabled={loading} 
+            className='w-full bg-blue-600 text-white p-3 rounded-lg font-semibold uppercase hover:bg-blue-700 disabled:opacity-80 transition'
           >
-            {loading ? "Signing In..." : "Sign In"}
+            {loading ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
-        <p className="mt-6 text-center text-gray-600 text-sm">
-          Don’t have an account?{" "}
-          <Link
-            to="/signup"
-            className="text-blue-600 hover:underline font-medium"
-          >
-            Sign Up
-          </Link>
-        </p>
+
+        <div className="text-center text-sm text-gray-600">
+          <p>
+            Don't have an account?
+            <Link to={'/signup'} className='font-medium text-blue-600 hover:text-blue-500 ml-1'>Sign up</Link>
+          </p>
+        </div>
+        
+        {error && <p className='text-red-500 text-center text-sm mt-4'>{error}</p>}
       </div>
     </div>
   );
-};
-
-export default Login;
+}

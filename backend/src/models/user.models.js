@@ -2,39 +2,46 @@ import mongoose from 'mongoose';
 
 const UserSchema = new mongoose.Schema({
   username: {
-      type: String,
-      unique: true,
-      sparse: true   
+    type: String,
+    unique: true,
+    sparse: true, // Allows multiple null values, but unique if a value exists
   },
   email: {
-      type: String,
-      required: true,
-      unique: true
+    type: String,
+    required: true,
+    unique: true,
   },
   password: {
-      type: String,
-    },
+    type: String, // Not required for Google OAuth users
+  },
   firstName: {
-      type: String
+    type: String,
   },
   lastName: {
-      type: String
+    type: String,
   },
   contactNumber: {
-      type: String
+    type: String,
   },
   profilePictureURL: {
-      type: String
+    type: String,
   },
   googleId: {
-      type: String,
-      unique: true,
-      sparse: true   
+    type: String,
+    unique: true,
+    sparse: true, // Allows multiple null values, but unique if a value exists
+  },
+  // --- Fields for Password Reset ---
+  passwordResetToken: {
+    type: String,
+  },
+  passwordResetExpires: {
+    type: Date,
   },
   createdAt: {
-      type: Date,
-      default: Date.now
-  }
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const UserModel = mongoose.model("user", UserSchema);
