@@ -7,6 +7,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import PrivateRoute from './components/privateRoutes'; 
 
+<<<<<<< HEAD
 export default function App() {
   return (
     // The <BrowserRouter> has been removed from this file.
@@ -25,4 +26,8 @@ export default function App() {
       </Route>
     </Routes>
   );
+=======
+function App() {
+  return <h1 className="text-3xl">Yashwath how </h1>;
+>>>>>>> origin
 }
