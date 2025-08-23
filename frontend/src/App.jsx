@@ -10,11 +10,11 @@ import LostPage from "./components/lost/LostPage";
 import Navbar from "./layout/Navbar";
 import ReportLost from "./components/lost/ReportLost";
 import Profile from "./components/profile/Profile";
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from "react-hot-toast";
 import ReportFound from "./pages/ReportFound";
 import FoundItemsPage from "./pages/FoundItems";
 import LostItemsPage from "./pages/LostItemsPage";
-import FoundItemDetailPage from './pages/FoundItemDetails';
+import FoundItemDetailPage from "./pages/FoundItemDetails";
 
 export default function App() {
   return (
@@ -33,11 +33,10 @@ export default function App() {
         <Route path="/lost" element={<LostItemsPage />} />
         <Route path="/report-lost" element={<ReportLost />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/report-found" element={<ReportFound />} /> 
+        <Route path="/report-found" element={<ReportFound />} />
         <Route path="/found" element={<FoundItemsPage />} />
-        <Route path="/found/:id" element={<FoundItemDetailPage />} /> {/* <-- ADD THIS LINE */}
-
-
+        <Route path="/found/:id" element={<FoundItemDetailPage />} />{" "}
+        {/* <-- ADD THIS LINE */}
         {/* --- Private Routes --- */}
         <Route element={<PrivateRoute />}>
           <Route path="/" element={<Home />} />
