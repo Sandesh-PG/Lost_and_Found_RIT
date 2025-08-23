@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { AuthContext } from "../AuthContext";
 import { FaBars, FaTimes, FaSignInAlt } from "react-icons/fa";
 import defaultAvatar from "../assets/default-avatar.png";
@@ -15,7 +15,10 @@ const navLinks = [
 const Navbar = () => {
   const { token, currentUser } = useContext(AuthContext);
   const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
   const avatarUrl = currentUser?.avatar || defaultAvatar;
+
+  const isActive = (path) => location.pathname === path;
 
   return (
     <nav className="w-full bg-white shadow-md px-6 py-4 flex items-center justify-between relative">
@@ -31,7 +34,11 @@ const Navbar = () => {
           <Link
             to={to}
             key={label}
-            className="text-base font-medium hover:text-blue-700 transition"
+            className={`text-base font-medium hover:text-blue-700 transition ${
+              isActive(to)
+                ? "text-blue-400 border-b-2 border-blue-400" // Active state - light orange
+                : "text-gray-700" // Default state
+            }`}
           >
             {label}
           </Link>

@@ -4,7 +4,7 @@ const UserSchema = new mongoose.Schema({
   username: {
     type: String,
     unique: true,
-    sparse: true, // Allows multiple null values, but unique if a value exists
+    sparse: true, 
   },
   email: {
     type: String,
@@ -12,7 +12,7 @@ const UserSchema = new mongoose.Schema({
     unique: true,
   },
   password: {
-    type: String, // Not required for Google OAuth users
+    type: String,
   },
   firstName: {
     type: String,
@@ -29,7 +29,7 @@ const UserSchema = new mongoose.Schema({
   googleId: {
     type: String,
     unique: true,
-    sparse: true, // Allows multiple null values, but unique if a value exists
+    sparse: true, 
   },
   // --- Fields for Password Reset ---
   passwordResetToken: {
