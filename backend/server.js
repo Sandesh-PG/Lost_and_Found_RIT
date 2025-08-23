@@ -9,7 +9,7 @@ import connectToDb from "./src/db/db.js";
 import authRoutes from './src/routes/auth.routes.js';
 import './src/middleware/passport.js'; // This executes the passport configuration
 import lostRoutes from "./src/routes/Lost.routes.js"
-
+import foundRoutes from "./src/routes/Found.routes.js"
 // Connect to the database
 connectToDb();
 
@@ -41,6 +41,7 @@ app.use(passport.session());
 // --- Routes ---
 app.use('/api/auth', authRoutes);
 app.use("/api/lost", lostRoutes);
+app.use("/api/found", foundRoutes);
 
 // --- Server Start ---
 app.listen(PORT, () => {
