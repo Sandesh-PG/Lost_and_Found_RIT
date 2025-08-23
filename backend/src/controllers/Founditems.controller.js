@@ -1,5 +1,5 @@
 import FoundItem from "../models/FoundItem.models.js";
-import User from "../models/user.models.js"; // Import the User model
+import User from "../models/user.models.js"; 
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 
