@@ -1,48 +1,36 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
-
-const LostItemSchema = new mongoose.Schema({
-    itemName: {
-        type: String,
-        required: true
+const LostItemSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    location: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    date: {
+      type: Date,
+      required: true,
     },
     description: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
-    category: {
-        type: String,
-        required: true
-    },
-    lostLocation: {
-        type: String,
-        required: true
-    },
-    dateLost: {
-        type: Date,
-        required: true
-    },
-    reportedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-    photoURLs: {
-        type: [String],
-        default: []
+    photoUrl: {
+      type: String, // store uploaded file URL (e.g., from Cloudinary, Firebase, S3)
+      default: null,
     },
     status: {
-        type: String,
-        enum: ['Lost', 'Found'],
-        default:'Lost'
+      type: String,
+      enum: ["lost", "found", "returned"],
+      default: "lost",
     },
-    createdAt : {
-        type : Date,
-        default : Date.now()
-    }
-});
+  },
+  { timestamps: true }
+);
 
-
-const LostItemModel = mongoose.model("LostItem", LostItemSchema);
-
-module.exports = LostItemModel;
+export default mongoose.model("LostItem", LostItemSchema);

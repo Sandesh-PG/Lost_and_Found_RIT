@@ -1,21 +1,20 @@
-import express from "express"
+import express from "express";
+import {
+  createLostItem,
+  getAllLostItems,
+  getLostItemById,
+  updateLostItem,
+  deleteLostItem,
+} from "../controllers/Lostitems.controller.js";
+import authMiddleware from '../middleware/auth.middleware.js'
 
 const router = express.Router();
 
-
-// GET /: To retrieve a list of all found items.
-router.get('/', FoundItemController);
-
-// POST /: To report a new found item. (Protected)
-router.post('/', AuthMiddleware, FoundNewItemController);
-
-// GET /:itemId: To get details of a specific found item.
-router.get('/:itemId', DetailsItemController);
-
-// PUT /:itemId: To update a found item's details. (Protected)
-router.put('/:itemId', AuthMiddleware, UpdateFoundItemController);
-
-// GET /user/:userId: To get a list of found items reported by a specific user.
-router.get('/user/:userId', AuthMiddleware, ListOfItemsFoundByUserController);
+// Lost Item routes
+router.post("/", createLostItem);        // Report lost item
+router.get("/", getAllLostItems);        // Get all
+router.get("/:id",  getLostItemById);     // Get single
+router.put("/:id", updateLostItem);      // Update
+router.delete("/:id", deleteLostItem);   // Delete
 
 export default router;
