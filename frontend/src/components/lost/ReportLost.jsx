@@ -1,7 +1,8 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
-import { AuthContext } from "../../AuthContext"; // Make sure this path is correct
+import { AuthContext } from "../../AuthContext";
+// import { uploadToCloudinary } from "../utils/cloudinaryUpload";
 
 // SVG Icon for the upload button
 const UploadIcon = () => (
@@ -13,7 +14,7 @@ const UploadIcon = () => (
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
-    strokeLinecap="round"
+    strokeLinecap="round" 
     strokeLinejoin="round"
     className="w-5 h-5 mr-2 text-gray-500"
   >
@@ -33,6 +34,8 @@ export default function ReportLost() {
     date: "",
     description: "",
     photo: null,
+    category: "Others",
+    tags: "",
   });
   const [submitting, setSubmitting] = useState(false);
 
@@ -43,70 +46,88 @@ export default function ReportLost() {
     }
   }, [currentUser, navigate]);
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: files ? files[0] : value,
-    }));
-  };
-
-  const handleReset = () => {
-    setForm({
-      name: "",
-      location: "",
-      date: "",
-      description: "",
-      photo: null,
-    });
-    if (document.getElementById("photo-upload")) {
-      document.getElementById("photo-upload").value = "";
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
 
     let photoUrl = null;
-    if (form.photo) {
-      // In a real app, you would upload the photo to a service
-      // and get the real URL.
-      photoUrl = "/placeholder-photo.jpg";
-    }
-
     try {
-      if (!token) {
-        throw new Error("Authentication token not found. Please log in again.");
+      if (form.photo) {
+        photoUrl = await uploadToCloudinary(form.photo);
       }
 
+      const submissionData = {
+        name: form.name,
+        location: form.location,
+        date: form.date,
+        description: form.description,
+        photoUrl,
+        category: form.category,
+        tags: form.tags
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter(Boolean),
+        reportedBy: currentUser._id,
+      };
+
+      // Use submissionData here to call your backend API
       const response = await fetch("/api/lost", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          name: form.name,
-          location: form.location,
-          date: form.date,
-          description: form.description,
-          photoUrl,
-          reportedBy: currentUser._id,
-        }),
+        body: JSON.stringify(submissionData),
       });
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to report lost item.");
       }
+
       toast.success("Lost item reported!");
       navigate("/lost");
-    } catch (err) {
-      toast.error(err.message);
+    } catch (error) {
+      toast.error(error.message);
     } finally {
       setSubmitting(false);
     }
   };
+
+  const handleChange = (e) => {
+  const { name, value, files } = e.target;
+
+  // File input
+  if (name === "photo") {
+    setForm((prev) => ({
+      ...prev,
+      photo: files[0] || null,
+    }));
+    return;
+  }
+
+  // Text, date, select, textarea
+  setForm((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+};
+
+  const handleReset = () => {
+  setForm({
+    name: "",
+    location: "",
+    date: "",
+    description: "",
+    photo: null,
+    category: "Others",
+    tags: "",
+  });
+
+  // Clear the hidden file input manually
+  const fileInput = document.getElementById("photo-upload");
+  if (fileInput) fileInput.value = "";
+};
 
   if (!currentUser) {
     return null; // Render nothing while redirecting
@@ -187,6 +208,47 @@ export default function ReportLost() {
                   placeholder="e.g., Central Park, Library Room 204"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="category"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Category
+                </label>
+                <select
+                  id="category"
+                  name="category"
+                  value={form.category}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                >
+                  <option value="">Select Category</option>
+                  <option value="Electronics">Electronics</option>
+                  <option value="Clothing">Clothing</option>
+                  <option value="Documents">Documents</option>
+                  <option value="Accessories">Accessories</option>
+                  <option value="Others">Others</option>
+                </select>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="tags"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Tags (comma separated)
+                </label>
+                <input
+                  type="text"
+                  id="tags"
+                  name="tags"
+                  placeholder="e.g., wallet, black, leather"
+                  value={form.tags}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
             </div>

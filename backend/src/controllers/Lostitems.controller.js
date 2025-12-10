@@ -1,11 +1,11 @@
-import LostItem from "../models/LostItem.models.js";  // ✅ ensure correct filename
+import LostItem from "../models/LostItem.models.js";  
 
 // @desc    Create a new lost item
 // @route   POST /api/lost
 // @access  Public (you can later protect it with auth)
 export const createLostItem = async (req, res) => {
   try {
-    const { name, location, date, description, photoUrl } = req.body;
+    const { name, location, date, description, photoUrl, status, category, tags } = req.body;
 
     if (!name || !location || !date || !description) {
       return res.status(400).json({ success: false, message: "Missing required fields" });
@@ -18,6 +18,8 @@ export const createLostItem = async (req, res) => {
       description,
       photoUrl,
       status: "lost",
+      category,
+      tags, 
     });
 
     await newItem.save();

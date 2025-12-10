@@ -29,6 +29,18 @@ const LostItemSchema = new mongoose.Schema(
       enum: ["lost", "found", "returned"],
       default: "lost",
     },
+    category: {
+      type: String,
+      enum: ["Electronics", "Clothing", "Documents", "Accessories", "Others"],
+      required: true,
+      default: "Others",
+      trim: true,
+    },
+    tags: {
+      type: [String], // Array of tags
+      default: [],
+      trim: true,
+    },
   },
   { timestamps: true }
 );
