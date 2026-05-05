@@ -52,10 +52,3 @@ npm run dev
 ```
 
 The frontend runs by default on `http://localhost:5173` and the backend on `http://localhost:5000`.
-
-## Notes
-
-- This repository is intentionally minimal. If you plan to modify auth or notifications, check `backend/src/middleware/passport.js`, `backend/src/controllers/auth.controller.js`, and `backend/src/controllers/Founditems.controller.js` for the relevant code paths.
-- To centralize docs, all per-subproject README files were removed and a single top-level README created.
-
-If you want, I can add step-by-step setup scripts, CI configuration, or expand ops instructions for production deployment.
