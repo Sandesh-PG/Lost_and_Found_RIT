@@ -20,6 +20,19 @@ const Navbar = () => {
 
   const isActive = (path) => location.pathname === path;
 
+  if (!token) {
+    return (
+      <nav className="w-full bg-white shadow-md px-6 py-4 flex items-center justify-between relative">
+        <Link
+          to="/"
+          className="text-2xl font-extrabold tracking-wide text-blue-600"
+        >
+          Lost<span className="text-gray-800">N</span>Found
+        </Link>
+      </nav>
+    );
+  }
+
   return (
     <nav className="w-full bg-white shadow-md px-6 py-4 flex items-center justify-between relative">
       <Link
@@ -43,7 +56,7 @@ const Navbar = () => {
             {label}
           </Link>
         ))}
-        {token ? (
+        {token && (
           <Link to="/profile" className="block">
             <img
               src={avatarUrl}
@@ -52,20 +65,6 @@ const Navbar = () => {
               title={currentUser?.username || "Profile"}
             />
           </Link>
-        ) : (
-          <>
-            <Link to="/login">
-              <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                <FaSignInAlt />
-                Sign In
-              </button>
-            </Link>
-            <Link to="/signup">
-              <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-                Sign Up
-              </button>
-            </Link>
-          </>
         )}
       </div>
 
@@ -89,7 +88,7 @@ const Navbar = () => {
               {label}
             </Link>
           ))}
-          {token ? (
+          {token && (
             <Link
               to="/profile"
               onClick={() => setMenuOpen(false)}
@@ -102,20 +101,6 @@ const Navbar = () => {
                 title={currentUser?.username || "Profile"}
               />
             </Link>
-          ) : (
-            <>
-              <Link to="/login" onClick={() => setMenuOpen(false)}>
-                <button className="flex items-center gap-2 w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                  <FaSignInAlt />
-                  Sign In
-                </button>
-              </Link>
-              <Link to="/signup" onClick={() => setMenuOpen(false)}>
-                <button className="flex items-center gap-2 w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-                  Sign Up
-                </button>
-              </Link>
-            </>
           )}
         </div>
       )}

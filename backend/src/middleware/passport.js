@@ -27,6 +27,7 @@ passport.use(new GoogleStrategy({
           profilePictureURL: profile.photos[0].value,
         });
         // Pass the newly created user to the next step
+        console.log("Callback URL:", "http://localhost:5000/auth/google/callback");
         return done(null, newUser);
       }
     } catch (error) {
