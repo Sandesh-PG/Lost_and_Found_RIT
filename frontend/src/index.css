@@ -1,3 +1,222 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+	html {
+		scroll-behavior: smooth;
+	}
+}
+
+@layer utilities {
+	.auth-sheen,
+	.auth-blob,
+	.auth-orb {
+		position: absolute;
+		border-radius: 9999px;
+		filter: blur(24px);
+		animation: float-slow 14s ease-in-out infinite;
+	}
+
+	.auth-sheen {
+		border-radius: 0;
+		filter: none;
+		opacity: 0.9;
+		animation: sweep 16s linear infinite;
+	}
+
+	.auth-sheen-one {
+		inset: -20% auto auto -10%;
+		width: 28rem;
+		height: 28rem;
+		background: radial-gradient(circle, rgba(59, 130, 246, 0.26), transparent 65%);
+	}
+
+	.auth-sheen-two {
+		right: -10%;
+		bottom: -18%;
+		width: 32rem;
+		height: 32rem;
+		background: radial-gradient(circle, rgba(244, 114, 182, 0.22), transparent 64%);
+		animation-delay: -7s;
+	}
+
+	.auth-blob-one {
+		top: -2rem;
+		left: -2rem;
+		width: 20rem;
+		height: 20rem;
+		background: linear-gradient(135deg, rgba(37, 99, 235, 0.3), rgba(14, 165, 233, 0.12));
+	}
+
+	.auth-blob-two {
+		right: -4rem;
+		bottom: 2rem;
+		width: 24rem;
+		height: 24rem;
+		background: linear-gradient(135deg, rgba(219, 39, 119, 0.22), rgba(249, 115, 22, 0.1));
+		animation-delay: -4s;
+		animation-duration: 18s;
+	}
+
+	.auth-grid {
+		position: absolute;
+		inset: 0;
+		background-image: linear-gradient(rgba(15, 23, 42, 0.055) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(15, 23, 42, 0.055) 1px, transparent 1px);
+		background-size: 44px 44px;
+		mask-image: radial-gradient(circle at center, rgba(0, 0, 0, 0.9), transparent 72%);
+		animation: grid-drift 30s linear infinite;
+	}
+
+	.auth-wave {
+		position: absolute;
+		inset: 0;
+		opacity: 0.55;
+		background-size: 220% 220%;
+		animation: gradient-pan 14s ease infinite;
+	}
+
+	.auth-wave-one {
+		background-image: radial-gradient(circle at 25% 30%, rgba(255, 255, 255, 0.34), transparent 12%),
+			radial-gradient(circle at 75% 70%, rgba(99, 102, 241, 0.16), transparent 18%);
+	}
+
+	.auth-wave-two {
+		background-image: radial-gradient(circle at 20% 75%, rgba(14, 165, 233, 0.12), transparent 18%),
+			radial-gradient(circle at 78% 24%, rgba(244, 114, 182, 0.12), transparent 16%);
+		animation-direction: reverse;
+	}
+
+	.auth-orb {
+		background: radial-gradient(circle, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0));
+		opacity: 0.75;
+	}
+
+	.auth-orb-one {
+		top: 20%;
+		right: 18%;
+		width: 5rem;
+		height: 5rem;
+		animation-delay: -2s;
+	}
+
+	.auth-orb-two {
+		bottom: 16%;
+		left: 16%;
+		width: 3.5rem;
+		height: 3.5rem;
+		animation-delay: -6s;
+		animation-duration: 20s;
+	}
+
+	.auth-floating-card {
+		position: absolute;
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		border: 1px solid rgba(255, 255, 255, 0.45);
+		border-radius: 1.5rem;
+		background: rgba(255, 255, 255, 0.78);
+		padding: 0.85rem 1rem;
+		color: #0f172a;
+		box-shadow: 0 18px 40px rgba(15, 23, 42, 0.1);
+		backdrop-filter: blur(14px);
+		animation: float-card 10s ease-in-out infinite;
+	}
+
+	.auth-floating-card span {
+		font-size: 0.7rem;
+		font-weight: 700;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: #2563eb;
+	}
+
+	.auth-floating-card strong {
+		font-size: 0.92rem;
+		line-height: 1.2;
+	}
+
+	.auth-floating-card-one {
+		top: 18%;
+		left: 8%;
+		animation-delay: -3s;
+	}
+
+	.auth-floating-card-three {
+		top: 36%;
+		right: 10%;
+		animation-delay: -1s;
+		animation-duration: 12s;
+	}
+
+	.auth-floating-card-two {
+		right: 8%;
+		bottom: 16%;
+		animation-delay: -6s;
+	}
+
+	.auth-floating-card-four {
+		left: 12%;
+		bottom: 14%;
+		animation-delay: -8s;
+		animation-duration: 13s;
+	}
+
+	.animate-gradient-pan {
+		background-size: 200% 200%;
+		animation: gradient-pan 12s ease infinite;
+	}
+}
+
+@keyframes sweep {
+	0% {
+		transform: translate3d(-4%, -2%, 0) scale(1);
+	}
+	50% {
+		transform: translate3d(4%, 2%, 0) scale(1.06);
+	}
+	100% {
+		transform: translate3d(-4%, -2%, 0) scale(1);
+	}
+}
+
+@keyframes grid-drift {
+	0% {
+		transform: translate3d(0, 0, 0);
+	}
+	100% {
+		transform: translate3d(44px, 44px, 0);
+	}
+}
+
+@keyframes float-card {
+	0%,
+	100% {
+		transform: translate3d(0, 0, 0) rotate(-1deg);
+	}
+	50% {
+		transform: translate3d(0, -10px, 0) rotate(1deg);
+	}
+}
+
+@keyframes float-slow {
+	0%,
+	100% {
+		transform: translate3d(0, 0, 0) scale(1);
+	}
+	50% {
+		transform: translate3d(0, -14px, 0) scale(1.05);
+	}
+}
+
+@keyframes gradient-pan {
+	0%,
+	100% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+}

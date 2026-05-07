@@ -18,8 +18,7 @@ import FoundItemDetailPage from "./pages/FoundItemDetails";
 
 export default function App() {
   return (
-    // The <BrowserRouter> has been removed from this file.
-    // It should be in your main.jsx file.
+
     <>
       <Toaster position="top-center" />
       <Navbar />
@@ -36,7 +35,6 @@ export default function App() {
         <Route path="/report-found" element={<ReportFound />} />
         <Route path="/found" element={<FoundItemsPage />} />
         <Route path="/found/:id" element={<FoundItemDetailPage />} />{" "}
-        {/* <-- ADD THIS LINE */}
         {/* --- Private Routes --- */}
         <Route element={<PrivateRoute />}>
           <Route path="/" element={<Home />} />

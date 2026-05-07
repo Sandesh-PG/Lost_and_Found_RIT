@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import ItemDetailModal from "./ItemDetailModal";
 import Pagination from "../components/Pagination";
+import ItemImage from "../components/ItemImage";
 
-// --- SVG Icons (for visual appeal) ---
 const SearchIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -15,7 +15,7 @@ const SearchIcon = () => (
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="text-gray-400"
+    className="text-slate-400"
   >
     <circle cx="11" cy="11" r="8"></circle>
     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -39,47 +39,56 @@ const PlusIcon = () => (
     <line x1="5" y1="12" x2="19" y2="12"></line>
   </svg>
 );
-// --- Helper Function to Format Dates ---
+
 const formatDate = (dateString) =>
   new Date(dateString).toLocaleDateString("en-US", {
     year: "numeric",
-    month: "long",
+    month: "short",
     day: "numeric",
   });
 
-// --- Reusable Item Card Component ---
 const FoundItemCard = ({ item, onViewDetails }) => (
-  <div className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden flex flex-col">
-    <div className="w-full h-48 bg-gray-100 overflow-hidden">
-      <img
-        src={
-          item.photoUrl ||
-          "https://placehold.co/600x400/E2E8F0/A0AEC0?text=No+Image"
-        }
+  <article className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-2xl">
+    <div className="relative h-56 overflow-hidden bg-slate-100">
+      <ItemImage
+        src={item.photoUrl}
         alt={item.item}
-        className="w-full h-full object-cover"
+        label="No Image"
+        className="h-full"
+        imageClassName="transition duration-500 group-hover:scale-105"
       />
+      <div className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-blue-700 shadow-sm backdrop-blur">
+        Found
+      </div>
     </div>
-    <div className="p-5 flex flex-col flex-grow">
-      <h3 className="text-lg font-bold text-gray-500 uppercase tracking-wider">
-        {item.item}
-      </h3>
-      <p className="text-base text-gray-700 font-semibold mt-2">
-        Found by: {item.name}
+
+    <div className="flex flex-col p-6">
+      <h3 className="text-xl font-bold text-slate-900">{item.item}</h3>
+      <p className="mt-1 text-sm text-slate-500">Reported by {item.name}</p>
+
+      <div className="mt-5 space-y-3 text-sm text-slate-600">
+        <div className="flex items-center justify-between gap-4 rounded-2xl bg-slate-50 px-4 py-3">
+          <span className="font-medium text-slate-500">Location</span>
+          <span className="text-right font-semibold text-slate-800">{item.location}</span>
+        </div>
+        <div className="flex items-center justify-between gap-4 rounded-2xl bg-slate-50 px-4 py-3">
+          <span className="font-medium text-slate-500">Date found</span>
+          <span className="text-right font-semibold text-slate-800">{formatDate(item.date)}</span>
+        </div>
+      </div>
+
+      <p className="mt-5 line-clamp-3 text-sm leading-6 text-slate-600">
+        {item.description}
       </p>
-      <p className="text-sm text-gray-500 mt-1">Location: {item.location}</p>
-      <p className="text-sm text-gray-500 mt-1">
-        Date: {formatDate(item.date)}
-      </p>
-      <div className="flex-grow"></div>
+
       <button
         onClick={() => onViewDetails(item)}
-        className="text-blue-500 font-semibold mt-4 self-start hover:text-blue-700 transition-colors"
+        className="mt-6 inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-600"
       >
-        View Details →
+        View Details
       </button>
     </div>
-  </div>
+  </article>
 );
 
 const FoundItemsPage = () => {
@@ -88,19 +97,18 @@ const FoundItemsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
-
-  // --- Pagination State ---
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8; // Show 8 items per page (2 rows of 4)
 
-  // --- Fetching data from your backend ---
+  const itemsPerPage = 8;
+
   useEffect(() => {
     const fetchFoundItems = async () => {
       try {
         const response = await fetch("/api/found");
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          throw new Error("Could not load found items");
         }
+
         const data = await response.json();
         if (data.success) {
           setItems(data.data);
@@ -109,7 +117,6 @@ const FoundItemsPage = () => {
         }
       } catch (err) {
         setError(err.message);
-        console.error("Fetch error:", err);
       } finally {
         setLoading(false);
       }
@@ -118,128 +125,176 @@ const FoundItemsPage = () => {
     fetchFoundItems();
   }, []);
 
-  // --- Reset to first page when search term changes ---
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
 
-  // --- Filter and Paginate Items ---
-  const filteredItems = items.filter(
-    (item) =>
-      (item.item &&
-        item.item.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (item.location &&
-        item.location.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const filteredItems = useMemo(() => {
+    const term = searchTerm.toLowerCase();
+    return items.filter(
+      (item) =>
+        item.item?.toLowerCase().includes(term) ||
+        item.location?.toLowerCase().includes(term) ||
+        item.description?.toLowerCase().includes(term)
+    );
+  }, [items, searchTerm]);
 
   const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentItems = filteredItems.slice(startIndex, endIndex);
 
-  const handleViewDetails = (item) => {
-    setSelectedItem(item);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedItem(null);
-  };
+  const totalItems = items.length;
+  const matchedItems = filteredItems.length;
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
-    // Scroll to top when page changes
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen font-sans">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
-          <h1 className="text-4xl font-bold text-gray-800">Found Items</h1>
-          <Link
-            to="/report-found"
-            className="w-full md:w-auto flex items-center justify-center bg-green-500 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-green-600 transition-colors duration-300"
-          >
-            <PlusIcon />
-            Report an Item
-          </Link>
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <section className="relative overflow-hidden text-white" style={{ background: "linear-gradient(135deg, #082f49 0%, #0f172a 55%, #020617 100%)" }}>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(96,165,250,0.28),transparent_30%),radial-gradient(circle_at_bottom_left,rgba(34,197,94,0.14),transparent_28%)]" />
+        <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-3xl">
+              <span className="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-1 text-sm font-medium text-blue-100 backdrop-blur">
+                Found Items Board
+              </span>
+              <h1 className="mt-5 text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl">
+                Share found items and help return them to the right person.
+              </h1>
+              <p className="mt-5 max-w-2xl text-base leading-7 text-slate-200 sm:text-lg">
+                Browse what the community has found, filter by item or location,
+                and open a card to quickly review details before contacting the reporter.
+              </p>
+            </div>
+
+            <Link
+              to="/report-found"
+              className="inline-flex w-full items-center justify-center rounded-2xl bg-white px-6 py-4 text-sm font-bold text-blue-950 shadow-lg shadow-blue-950/30 transition hover:-translate-y-0.5 hover:bg-blue-50 lg:w-auto"
+            >
+              <PlusIcon />
+              Report a Found Item
+            </Link>
+          </div>
+
+          <div className="mt-10 grid gap-4 sm:grid-cols-3">
+            <div className="rounded-3xl border border-white/10 bg-white/10 p-5 shadow-lg shadow-black/10 backdrop-blur-sm">
+              <p className="text-sm text-slate-300">Total reports</p>
+              <p className="mt-2 text-3xl font-black">{totalItems}</p>
+            </div>
+            <div className="rounded-3xl border border-white/10 bg-white/10 p-5 shadow-lg shadow-black/10 backdrop-blur-sm">
+              <p className="text-sm text-slate-300">Visible now</p>
+              <p className="mt-2 text-3xl font-black">{matchedItems}</p>
+            </div>
+            <div className="rounded-3xl border border-white/10 bg-white/10 p-5 shadow-lg shadow-black/10 backdrop-blur-sm">
+              <p className="text-sm text-slate-300">Best action</p>
+              <p className="mt-2 text-3xl font-black">Compare & contact</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+        <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">
+                Explore reports
+              </p>
+              <h2 className="mt-2 text-2xl font-bold text-slate-900">
+                Filter the found items feed
+              </h2>
+              <p className="mt-1 text-sm text-slate-500">
+                Look by item name, location, or details in the description.
+              </p>
+            </div>
+
+            <div className="w-full lg:max-w-xl">
+              <label className="relative block">
+                <span className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                  <SearchIcon />
+                </span>
+                <input
+                  type="text"
+                  placeholder="Search by item, place, or description..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-4 pl-12 pr-4 text-base text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                />
+              </label>
+            </div>
+          </div>
         </div>
 
-        <div className="relative mb-8">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <SearchIcon />
-          </div>
-          <input
-            type="text"
-            placeholder="Search by item name or location..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-white border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-        </div>
+        {loading && <div className="py-20 text-center text-slate-500">Loading found items...</div>}
 
-        {loading && (
-          <div className="text-center py-16 text-gray-500">
-            Loading items...
+        {error && !loading && (
+          <div className="mt-6 rounded-2xl border border-blue-200 bg-blue-50 px-5 py-4 text-center text-blue-700">
+            Error: {error}
           </div>
-        )}
-
-        {error && (
-          <div className="text-center py-16 text-red-500">Error: {error}</div>
         )}
 
         {!loading && !error && (
           <>
-            {/* Results Summary and Top Pagination */}
-            {filteredItems.length > 0 && (
-              <div className="flex justify-between items-center gap-4 mb-6">
-                <div className="text-gray-600 text-sm">
-                  Showing {startIndex + 1}-
-                  {Math.min(endIndex, filteredItems.length)} of{" "}
-                  {filteredItems.length} items
-                  {searchTerm && ` for "${searchTerm}"`}
+            {filteredItems.length > 0 ? (
+              <div className="mt-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div className="text-sm text-slate-600">
+                  Showing <span className="font-semibold text-slate-900">{startIndex + 1}</span>
+                  -<span className="font-semibold text-slate-900">{Math.min(endIndex, matchedItems)}</span>
+                  {' '}of <span className="font-semibold text-slate-900">{matchedItems}</span> items
+                  {searchTerm ? <span className="ml-1 text-slate-500">for “{searchTerm}”</span> : null}
                 </div>
 
-                {/* Reusable Pagination - Blue theme for found items */}
-                <div className="flex-shrink-0 ml-auto">
+                <div className="flex-shrink-0">
                   <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}
                     onPageChange={handlePageChange}
-                    activeColor="bg-blue-500"
+                    activeColor="bg-blue-600"
                     size="compact"
                   />
                 </div>
               </div>
-            )}
+            ) : null}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {currentItems.map((item) => (
-                <FoundItemCard
-                  key={item._id}
-                  item={item}
-                  onViewDetails={handleViewDetails}
-                />
-              ))}
-            </div>
-
-            {filteredItems.length === 0 && (
-              <div className="text-center py-16">
-                <h3 className="text-xl font-semibold text-gray-700">
-                  No Items Found
-                </h3>
-                <p className="text-gray-500 mt-2">
+            {currentItems.length > 0 ? (
+              <div className="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+                {currentItems.map((item) => (
+                  <FoundItemCard
+                    key={item._id}
+                    item={item}
+                    onViewDetails={(selected) => setSelectedItem(selected)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="mt-10 rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center shadow-sm">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                  <SearchIcon />
+                </div>
+                <h3 className="mt-5 text-2xl font-bold text-slate-900">No items found</h3>
+                <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-slate-500">
                   {searchTerm
-                    ? `No items match "${searchTerm}". Try a different search term.`
-                    : "Your database might be empty, or there was a problem fetching the data."}
+                    ? `Nothing matches “${searchTerm}”. Try another item name, place, or description.`
+                    : "There are no found item reports yet. Be the first to add one and help someone recover their item."}
                 </p>
+                <Link
+                  to="/report-found"
+                  className="mt-6 inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
+                >
+                  <PlusIcon />
+                  Create a Report
+                </Link>
               </div>
             )}
           </>
         )}
       </main>
 
-      <ItemDetailModal item={selectedItem} onClose={handleCloseModal} />
+      <ItemDetailModal item={selectedItem} onClose={() => setSelectedItem(null)} />
     </div>
   );
 };

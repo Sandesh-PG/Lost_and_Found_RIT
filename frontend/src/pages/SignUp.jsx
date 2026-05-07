@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import { AuthContext } from "../AuthContext.jsx"; // Import AuthContext
 import { Link, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
+import AuthBackdrop from "../components/AuthBackdrop";
 
 const Signup = () => {
   const { setIsLogin } = useContext(AuthContext); // Use context setter
@@ -52,27 +53,36 @@ const Signup = () => {
   //...rest of your component remains unchanged
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
-          Create your account
-        </h2>
+    <div className="relative min-h-screen overflow-hidden flex items-center justify-center bg-slate-50 px-4 py-10">
+      <AuthBackdrop />
+      <div className="relative z-10 w-full max-w-md rounded-3xl border border-white/60 bg-white/85 p-8 shadow-[0_20px_60px_rgba(15,23,42,0.12)] backdrop-blur-xl">
+        <div className="mb-8 text-center">
+          <p className="mb-3 inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700">
+            Join the community
+          </p>
+          <h2 className="text-3xl font-black tracking-tight text-slate-900">
+            Create your account
+          </h2>
+          <p className="mt-3 text-sm leading-6 text-slate-500">
+            Report items, search faster, and stay connected with found listings.
+          </p>
+        </div>
         <button
           onClick={handleGoogleLogin}
-          className="w-full flex items-center justify-center gap-3 border border-gray-300 py-3 rounded-lg hover:bg-gray-100 transition"
+          className="w-full flex items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white/90 py-3 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50"
           disabled={loading}
         >
           <FcGoogle size={22} />
-          <span className="font-medium text-gray-700">Sign up with Google</span>
+          <span className="font-semibold text-slate-700">Sign up with Google</span>
         </button>
-        <div className="flex items-center my-6">
-          <hr className="flex-1 border-gray-300" />
-          <span className="px-3 text-gray-500 text-sm">or</span>
-          <hr className="flex-1 border-gray-300" />
+        <div className="flex items-center my-6 py-1">
+          <hr className="flex-1 border-slate-200" />
+          <span className="px-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">or</span>
+          <hr className="flex-1 border-slate-200" />
         </div>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="mb-2 block text-sm font-medium text-slate-700">
               Username
             </label>
             <input
@@ -81,13 +91,13 @@ const Signup = () => {
               value={formData.username}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
               placeholder="Enter your username"
               disabled={loading}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="mb-2 block text-sm font-medium text-slate-700">
               Email
             </label>
             <input
@@ -96,13 +106,13 @@ const Signup = () => {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
               placeholder="Enter your email"
               disabled={loading}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="mb-2 block text-sm font-medium text-slate-700">
               Password
             </label>
             <input
@@ -111,24 +121,24 @@ const Signup = () => {
               value={formData.password}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
               placeholder="Enter your password"
               disabled={loading}
             />
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold text-lg hover:bg-blue-700 transition"
+            className="w-full rounded-2xl bg-gradient-to-r from-emerald-600 to-blue-600 py-3 font-semibold text-white shadow-lg shadow-blue-600/25 transition hover:-translate-y-0.5 hover:from-emerald-700 hover:to-blue-700"
             disabled={loading}
           >
             {loading ? "Signing Up..." : "Sign Up"}
           </button>
         </form>
-        <p className="mt-6 text-center text-gray-600 text-sm">
+        <p className="mt-6 text-center text-sm text-slate-600">
           Already have an account?{" "}
           <Link
             to="/login"
-            className="text-blue-600 hover:underline font-medium"
+            className="font-semibold text-blue-600 hover:underline"
           >
             Sign In
           </Link>
